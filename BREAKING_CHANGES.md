@@ -7,6 +7,7 @@ Each bullet is prefixed with a flag identifying the kind of breaking change:
 - `[CLI]` -- CLI flag added, renamed, removed, or made required.
 - `[Config]` -- default value, environment variable, or manifest field change.
 - `[Format]` -- log, metric label, or serialized output format change that breaks parsers.
+- `[EVM]` -- EVM / precompile gas-schedule or execution-cost change that affects estimates or limits.
 
 Entries are split by audience. A change appears under `### For Validators` when validator-mode operation must change; otherwise it appears under `### For Node Operators`. A change requiring both audiences to act appears in both sections (rare).
 
@@ -116,10 +117,10 @@ No breaking changes in this release.
   - Logs, metrics, and JSON-RPC responses now use a single canonical format (signatures continue to use Base64). EIP-55 checksums are not used; Prometheus labels are case-sensitive.
   - Log parsers, alerting rules, and dashboards built against the previous mixed formats (EIP-55 checksummed, non-prefixed hex, etc.) must be updated.
 
-- **EIP-2929 warm/cold pricing now applies to Arc precompile account loads and `CallFrom` subcalls.**
-  - Precompile account access and `CallFrom` (Memo) subcalls charge EIP-2929 cold/warm account-access gas that `v0.6.x` did not.
-  - `eth_estimateGas` results and hardcoded gas limits taken against a `v0.6.x` node for precompile-adjacent paths (Memo / `CallFrom`, CCTP `TokenMessenger` calls) can be too low on `v0.7.0` and fail on submission.
-  - Re-estimate against a `v0.7.0` (or later) node. Consensus execution is unchanged for callers that already supply sufficient gas; only previously underpriced estimates break.
+- **[EVM] EIP-2929 warm/cold pricing now applies to account loads performed by Arc precompiles.**
+  - Account loads performed by Arc precompiles — including `CallFrom` (Memo) subcalls — now charge EIP-2929 cold/warm account-access gas that `v0.6.x` did not. Cost scales with the number of distinct cold accounts a call touches.
+  - `eth_estimateGas` results and hardcoded gas limits taken against a `v0.6.x` node for precompile-adjacent paths (`Memo`, `Multicall3From`, `CallFrom`) can be too low on `v0.7.0` and fail on submission.
+  - Re-estimate against a `v0.7.0` (or later) node. Transaction outcomes are unchanged for callers that already supply sufficient gas; the new pricing activates with the `Zero7` hardfork.
 
 ### For Validators
 
