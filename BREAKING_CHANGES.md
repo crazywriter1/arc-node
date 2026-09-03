@@ -116,6 +116,11 @@ No breaking changes in this release.
   - Logs, metrics, and JSON-RPC responses now use a single canonical format (signatures continue to use Base64). EIP-55 checksums are not used; Prometheus labels are case-sensitive.
   - Log parsers, alerting rules, and dashboards built against the previous mixed formats (EIP-55 checksummed, non-prefixed hex, etc.) must be updated.
 
+- **EIP-2929 warm/cold pricing now applies to Arc precompile account loads and `CallFrom` subcalls.**
+  - Precompile account access and `CallFrom` (Memo) subcalls charge EIP-2929 cold/warm account-access gas that `v0.6.x` did not.
+  - `eth_estimateGas` results and hardcoded gas limits taken against a `v0.6.x` node for precompile-adjacent paths (Memo / `CallFrom`, CCTP `TokenMessenger` calls) can be too low on `v0.7.0` and fail on submission.
+  - Re-estimate against a `v0.7.0` (or later) node. Consensus execution is unchanged for callers that already supply sufficient gas; only previously underpriced estimates break.
+
 ### For Validators
 
 - **[CLI] `arc-node-consensus`: `--validator` is required for block signing and voting.**
