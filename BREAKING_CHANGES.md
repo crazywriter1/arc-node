@@ -119,9 +119,9 @@ No breaking changes in this release.
 
 - **[EVM] EIP-2929 warm/cold pricing now applies to account loads performed by Arc precompiles.**
   - Old (`v0.6.x`): stateful precompile helpers did not charge EIP-2929 cold/warm account-access gas for loaded accounts.
-  - New (`v0.7.0`): account loads performed by Arc precompiles — including `CallFrom` (Memo) subcalls — charge that gas. Cost scales with the number of distinct cold accounts a call touches.
-  - `eth_estimateGas` results and hardcoded gas limits taken against a `v0.6.x` node for precompile-adjacent paths (`Memo`, `Multicall3From`, `CallFrom`) can be too low on `v0.7.0` and fail on submission.
-  - Re-estimate against a `v0.7.0` (or later) node. Transaction outcomes are unchanged for callers that already supply sufficient gas. Note this is not gated behind a hardfork — the new pricing takes effect as soon as the node runs `v0.7.0`, so re-estimate at upgrade time rather than at the next fork. (`CallFrom` itself activates with `Zero7`, but that governs the precompile's availability, not the account-load pricing.)
+  - New (`v0.7.0`): account loads in NativeCoinAuthority mint / burn / transfer charge that gas. Cost scales with the number of distinct cold accounts a call touches.
+  - `eth_estimateGas` results and hardcoded gas limits taken against a `v0.6.x` node can be too low. This applies chiefly to native fiat token mint / burn / transfer, which route through the NativeCoinAuthority precompile and are not hardfork-gated. `CallFrom` subcalls (`Memo`, `Multicall3From`) also charge cold account access, but that precompile only exists once `Zero7` is active.
+  - Re-estimate against a `v0.7.1` (or later) node. Transaction outcomes are unchanged for callers that already supply sufficient gas. Note this is not gated behind a hardfork — the new pricing takes effect as soon as the node runs `v0.7.1` or later, so re-estimate at upgrade time rather than at the next fork. (`CallFrom` itself activates with `Zero7`, but that governs the precompile's availability, not the NativeCoinAuthority account-load pricing.)
 
 ### For Validators
 
